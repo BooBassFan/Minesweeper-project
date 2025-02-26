@@ -1,1 +1,1 @@
-"C:\Program Files\LOVE\love.exe" "C:\Users\huber\Desktop\lua"
+"C:\Program Files\LOVE\love.exe" "C:\Users\%USERNAME%\Desktop\lua"
