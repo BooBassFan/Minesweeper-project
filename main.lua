@@ -278,8 +278,8 @@ function Draw_game()
     end
     if not GameLost and not GameWin then
         love.graphics.setColor(0,0,0)
-        love.graphics.print("Temps "..Time,10,10)
-        love.graphics.print("Mines restantes : "..MineNumber,Width-235,10)
+        love.graphics.print("Time "..Time,10,10)
+        love.graphics.print("Remaining mines : "..MineNumber,Width-235,10)
         love.graphics.setColor(255,255,255)
     else
         love.graphics.draw(RestartText,RestartTextX,RestartTextY)
