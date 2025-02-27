@@ -238,10 +238,10 @@ function love.mousepressed(x,y,button)
             elseif button==2 and y>Banner:getHeight() then
                 local rowMineCubeClicked=math.floor(y/50)
                 local columnMineCubeClicked=math.floor(x/50)+1
-                if MineField[rowMineCubeClicked][columnMineCubeClicked]==MineCube then
+                if MineField[rowMineCubeClicked][columnMineCubeClicked]==MineCube and MineNumber>0 then
                     MineField[rowMineCubeClicked][columnMineCubeClicked]=MineCubeFlag
                     MineNumber = MineNumber - 1
-                elseif MineField[rowMineCubeClicked][columnMineCubeClicked]==MineCubeTrapped then
+                elseif MineField[rowMineCubeClicked][columnMineCubeClicked]==MineCubeTrapped and MineNumber>0 then
                     MineField[rowMineCubeClicked][columnMineCubeClicked]=MineCubeTrappedFlag
                     MineNumber = MineNumber - 1
                 elseif MineField[rowMineCubeClicked][columnMineCubeClicked]==MineCubeFlag then
