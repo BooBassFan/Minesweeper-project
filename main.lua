@@ -1,6 +1,8 @@
 function love.load()
     math.randomseed(os.time())
     love.window.setTitle("Minesweeper")
+    MineSweeperFont = love.graphics.newFont("mine-sweeper.ttf")
+    love.graphics.setFont(MineSweeperFont)
     Width,Height,Flags=love.window.getMode()
     MenuBackground=love.graphics.newImage("assets/menuBackground.png")
     Banner=love.graphics.newImage("assets/bannerGoodGame.png")
@@ -150,12 +152,34 @@ function CountBombAroundMouse(mineField,xMouse,yMouse)
     return bombNumber
 end
 
+function AllBombFound(mineField)
+    local bombNumber=0
+    local mineCubeNumber=0
+    for i = 1, #mineField, 1 do
+        for j = 1, #mineField[1], 1 do
+            if mineField[i][j]==MineCubeTrapped then
+                bombNumber = bombNumber + 1
+            elseif mineField[i][j]==MineCube then
+                mineCubeNumber = mineCubeNumber + 1
+            end
+        end
+    end
+    if bombNumber==0 or mineCubeNumber==0 then
+        return true
+    else
+        return false
+    end
+end
+
 function love.update(dt)
     Time=math.floor(love.timer.getTime())-TimeMinus
     if GameLost then
         Banner=love.graphics.newImage("assets/bannerDeadGame.png")
     else
         Banner=love.graphics.newImage("assets/bannerGoodGame.png")
+    end
+    if AllBombFound(MineField) then
+        GameWin=true
     end
 end
 
@@ -168,6 +192,7 @@ function love.keypressed(key, scancode, isrepeat)
         TimeMinus=TimeMinus+Time
         MineField=CreateMinefield(16,11)
         GameLost=false
+        GameWin=false
     end
 end
 
@@ -252,7 +277,10 @@ function Draw_game()
         love.graphics.draw(YouWin,YouWinX,YouWinY)
     end
     if not GameLost and not GameWin then
-        love.graphics.print("Temps "..Time.." Mines restantes : "..MineNumber)
+        love.graphics.setColor(0,0,0)
+        love.graphics.print("Temps "..Time,10,10)
+        love.graphics.print("Mines restantes : "..MineNumber,Width-235,10)
+        love.graphics.setColor(255,255,255)
     else
         love.graphics.draw(RestartText,RestartTextX,RestartTextY)
     end
