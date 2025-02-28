@@ -1,6 +1,5 @@
 function love.load()
     math.randomseed(os.time())
-    love.window.setTitle("Minesweeper")
     MineSweeperFont = love.graphics.newFont("mine-sweeper.ttf")
     love.graphics.setFont(MineSweeperFont)
     Width,Height,Flags=love.window.getMode()
@@ -12,11 +11,12 @@ function love.load()
     QuitButton=love.graphics.newImage("assets/quitLittleButton.png")
     QuitButtonX=306
     QuitButtonY=374
-    MineCube=love.graphics.newImage("assets/MineCube.png")
-    MineCubeTrapped=love.graphics.newImage("assets/MineCubeTrapped.png")
+    MineCube=love.graphics.newImage("assets/mineCube.png")
+    MineCubeTrapped=love.graphics.newImage("assets/mineCubeTrapped.png")
     MineCubeClear=love.graphics.newImage("assets/MineCubeClear.png")
     MineCubeFlag=love.graphics.newImage("assets/MineCubeFlag.png")
     MineCubeTrappedFlag=love.graphics.newImage("assets/MineCubeTrappedFlag.png")
+    BombCube=love.graphics.newImage("assets/bombCube.png")
     Text1=love.graphics.newImage("assets/text1.png")
     Text2=love.graphics.newImage("assets/text2.png")
     Text3=love.graphics.newImage("assets/text3.png")
@@ -233,6 +233,7 @@ function love.mousepressed(x,y,button)
                         MineField[rowMineCubeClicked][columnMineCubeClicked]=Text8
                     end
                 elseif MineField[rowMineCubeClicked][columnMineCubeClicked]==MineCubeTrapped then
+                    MineField[rowMineCubeClicked][columnMineCubeClicked]=BombCube
                     GameLost=true
                 end
             elseif button==2 and y>Banner:getHeight() then
