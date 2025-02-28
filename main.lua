@@ -39,6 +39,7 @@ function love.load()
     MineNumber=math.floor(16*11*0.175)
     MineField=CreateMinefield(16,11)
     TimeMinus=0
+    TimeOnWin=0
     InMenu=true
     InGame=false
 end
@@ -180,6 +181,10 @@ function love.update(dt)
     end
     if AllBombFound(MineField) then
         GameWin=true
+        TimeOnWin=Time
+    end
+    if GameWin and TimeOnWin==0 then
+        TimeOnWin=Time
     end
 end
 
@@ -193,6 +198,7 @@ function love.keypressed(key, scancode, isrepeat)
         MineField=CreateMinefield(16,11)
         GameLost=false
         GameWin=false
+        TimeOnWin=0
     end
 end
 
@@ -276,6 +282,13 @@ function Draw_game()
         love.graphics.draw(YouLose,YouLoseX,YouLoseY)
     elseif GameWin then
         love.graphics.draw(YouWin,YouWinX,YouWinY)
+        if Time%2==1 then
+            love.graphics.setColor(255,0,0)
+        else
+            love.graphics.setColor(204,204,204)
+        end
+        love.graphics.print("Time "..TimeOnWin,10,10)
+        love.graphics.setColor(255,255,255)
     end
     if not GameLost and not GameWin then
         love.graphics.setColor(0,0,0)
