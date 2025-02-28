@@ -181,7 +181,6 @@ function love.update(dt)
     end
     if AllBombFound(MineField) then
         GameWin=true
-        TimeOnWin=Time
     end
     if GameWin and TimeOnWin==0 then
         TimeOnWin=Time
