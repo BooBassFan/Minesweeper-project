@@ -11,6 +11,12 @@ function love.load()
     QuitButton=love.graphics.newImage("assets/quitLittleButton.png")
     QuitButtonX=306
     QuitButtonY=374
+    EasyButton=love.graphics.newImage("assets/EasyButton.png")
+    EasyButtonX=106
+    EasyButtonY=274
+    HardButton=love.graphics.newImage("assets/HardButton.png")
+    HardButtonX=505
+    HardButtonY=274
     MineCube=love.graphics.newImage("assets/mineCube.png")
     MineCubeTrapped=love.graphics.newImage("assets/mineCubeTrapped.png")
     MineCubeClear=love.graphics.newImage("assets/MineCubeClear.png")
@@ -36,11 +42,13 @@ function love.load()
     YouWinY=274
     GameLost=false
     GameWin=false
-    MineNumber=math.floor(16*11*0.175)
-    MineField=CreateMinefield(16,11)
+    GameDifficulty="hard"
+    MineNumber=math.floor(32*22*0.175) --hard changed
+    MineField=CreateMinefield(GameDifficulty)
     TimeMinus=0
     TimeOnWin=0
     InMenu=true
+    InChoice=false
     InGame=false
 end
 
@@ -90,12 +98,19 @@ function CleanMineField(tableMinefield)
     return tableMinefield
 end
 
-function CreateMinefield(widthMinefield,heightMinefield)
+function CreateMinefield(difficulty)
+    if difficulty=="easy" then
+        WidthMinefield=16
+        HeightMinefield=11
+    elseif difficulty=="hard" then
+        WidthMinefield=32
+        HeightMinefield=22
+    end
     local counter=1
     local matrix = {}
-    for i = 1, heightMinefield, 1 do
+    for i = 1, HeightMinefield, 1 do
         matrix[i]={}
-        for j = 1, widthMinefield, 1 do
+        for j = 1, WidthMinefield, 1 do
             matrix[i][j]=counter
             counter = counter + 1
         end
@@ -109,9 +124,9 @@ function CreateMinefield(widthMinefield,heightMinefield)
         tableMine[i]=mineLocation
     end
     local tableMinefield={}
-    for i = 1, heightMinefield, 1 do
+    for i = 1, HeightMinefield, 1 do
         tableMinefield[i]={}
-        for j = 1, widthMinefield, 1 do
+        for j = 1, WidthMinefield, 1 do
             if TableContains(tableMine,matrix[i][j]) then
                 tableMinefield[i][j]=MineCubeTrapped
             else
@@ -127,7 +142,7 @@ function CountBombAround(mineField,row,column)
     local bombNumber=0
     for i = row-1, row+1, 1 do
         for j = column-1, column+1, 1 do
-            if i>0 and i<12 and j>0 and j<17 then
+            if i>0 and i<23 and j>0 and j<33 then --hard changed (12->23 and 17->33)
                 if mineField[i][j]==MineCubeTrapped or mineField[i][j]==MineCubeTrappedFlag then
                     bombNumber = bombNumber + 1
                 end
@@ -143,7 +158,7 @@ function CountBombAroundMouse(mineField,xMouse,yMouse)
     local columnMineCube=math.floor(xMouse/50)+1
     for i = rowMineCube-1, rowMineCube+1, 1 do
         for j = columnMineCube-1, columnMineCube+1, 1 do
-            if i>0 and i<12 and j>0 and j<17 then
+            if i>0 and i<23 and j>0 and j<33 then --hard to be changed
                 if mineField[i][j]==MineCubeTrapped or mineField[i][j]==MineCubeTrappedFlag then
                     bombNumber = bombNumber + 1
                 end
@@ -194,10 +209,14 @@ function love.keypressed(key, scancode, isrepeat)
     if key == "r" then
         MineNumber=math.floor(16*11*0.175)
         TimeMinus=TimeMinus+Time
-        MineField=CreateMinefield(16,11)
+        MineField=CreateMinefield(GameDifficulty)
         GameLost=false
         GameWin=false
         TimeOnWin=0
+    end
+    if key == "d" and InGame then
+        InGame=false
+        InChoice=true
     end
 end
 
@@ -205,13 +224,26 @@ function love.mousepressed(x,y,button)
     if not GameLost then
         if InMenu then
             if button==1 and x>PlayButtonX and x<PlayButtonX+PlayButton:getWidth() and y>PlayButtonY and y<PlayButtonY+PlayButton:getHeight() then
-                InGame=true
+                InChoice=true
                 InMenu=false
-                TimeMinus=TimeMinus+Time
             end
             if button==1 and x>QuitButtonX and x<QuitButtonX+QuitButton:getWidth() and y>QuitButtonY and y<QuitButtonY+QuitButton:getHeight() then
                 love.event.quit()
             end
+        elseif InChoice then
+            if button==1 and x>EasyButtonX and x<EasyButtonX+EasyButton:getWidth() and y>EasyButtonY and y<EasyButtonY+EasyButton:getHeight() then
+                GameDifficulty="easy"
+                InGame=true
+                InChoice=false
+                MineField=CreateMinefield(GameDifficulty)
+            end
+            if button==1 and x>HardButtonX and x<HardButtonX+HardButton:getWidth() and y>HardButtonY and y<HardButtonY+HardButton:getHeight() then
+                GameDifficulty="hard"
+                InGame=true
+                InChoice=false
+                MineField=CreateMinefield(GameDifficulty)
+            end
+            TimeMinus=TimeMinus+Time
         else
             if button==1 and y>Banner:getHeight() then
                 local rowMineCubeClicked=math.floor(y/50)
@@ -269,12 +301,19 @@ function Draw_menu()
     love.graphics.draw(QuitButton,QuitButtonX,QuitButtonY)
 end
 
+function Draw_choice()
+    love.graphics.draw(MenuBackground,0,50)
+    love.graphics.draw(Banner)
+    love.graphics.draw(EasyButton,EasyButtonX,EasyButtonY)
+    love.graphics.draw(HardButton,HardButtonX,HardButtonY)
+end
+
 function Draw_game()
     love.graphics.draw(Banner)
     for j = 1, #MineField, 1 do
         for i = 1, #MineField[1], 1 do
             Img=MineField[j][i]
-            love.graphics.draw(Img,(i-1)*50,j*50,0,0.5,0.5) --16 longueur 11 hauteur
+            love.graphics.draw(Img,(i-1)*25,(j+1)*25,0,0.25,0.25) --25 to 50 and 0.25 to 0.5 --hard changed and to change
         end
     end
     if GameLost then
@@ -291,7 +330,7 @@ function Draw_game()
     end
     if not GameLost and not GameWin then
         love.graphics.setColor(0,0,0)
-        love.graphics.print("Time "..Time,10,10)
+        love.graphics.print("Time "..Time..GameDifficulty,10,10) --debug test
         love.graphics.print("Remaining mines : "..MineNumber,Width-235,10)
         love.graphics.setColor(255,255,255)
     else
@@ -302,8 +341,9 @@ end
 function love.draw()
     if InMenu then
         Draw_menu()
-    end
-    if InGame then
+    elseif InChoice then
+        Draw_choice()
+    elseif InGame then
         Draw_game()
     end
 end
